@@ -3,7 +3,7 @@ import requests
 import json
 from collections import Counter
 
-f = open("oop.csv")
+f = open("dot.csv")
 csv_f = csv.reader(f)
 
 
@@ -37,7 +37,7 @@ class subreddit_author_parser:
         for user in new_author_list:
             print(user)
             try:
-                subreddit_list = self.get_pushshift_author_data(user)
+                subreddit_list = self._get_pushshift_author_data(user)
                 for individual in subreddit_list:
                     try:
                         list_of_authors_subreddits.append(individual["subreddit"])

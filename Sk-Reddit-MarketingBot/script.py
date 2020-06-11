@@ -14,35 +14,37 @@ class pushshift_parser:
         self.after_date = after_date
 
     def get_pushshift_data(self):
+        """Collects redditor author names by subreddit and UTC dates"""
         url = f"https://api.pushshift.io/reddit/search/submission/?size=1000&after={self.after_date}&before={self.before_date}&subreddit={self.subreddit}"
         print(url)
         r = requests.get(url)
         data = json.loads(r.text)
         return data["data"]
 
-    def collect_subreddit_Data(self, submission):
+    def collect_subreddit_data(self, submission):
+        """Collects and creates a list of authors and id from the url page created by get_pushshift_data"""
         sub_data = list()  # list to store data points
         author = submission["author"]
         sub_id = submission["id"]
 
         sub_data.append((sub_id, author))
-        self.substats[sub_id] = sub_data
 
     def gather_all_posts(self, data):
+        """Iterates through different pushshift url pages from the last date on the url page"""
         sub_count = 0
         while len(data) > 0:
             for submission in data:
                 self.collect_subreddit_data(submission)
                 sub_count += 1
-            # Calls getPushshiftData() with the created date of the last sub
+            # Calls getPushshiftData() with the created date of the last author
             print(len(data))
             date = str(datetime.datetime.fromtimestamp(data[-1]["created_utc"]))
             print(date)
             self.after_date = data[-1]["created_utc"]
             data = self.get_pushshift_data()
         print(len(data))
-        print(str(len(self.subStats)) + " submissions have added to list")
-        return self.subStats
+        print(str(len(self.sub_stats)) + " submissions have added to list")
+        return data
 
     def main(self):
         data = self.get_pushshift_data()
@@ -55,6 +57,7 @@ collection = Twitch.main()
 
 
 def update_subreddit_file(collection):
+    """Places all the collected pushshift data information into a csv file"""
     upload_count = 0
     print("input filename of submission file, please add .csv")
     filename = input()
